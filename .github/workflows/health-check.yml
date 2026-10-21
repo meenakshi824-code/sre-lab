@@ -1,0 +1,28 @@
+
+name: Bash Health Check CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  validate:
+    name: Validate Bash Scripts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Bash syntax
+        run: |
+          set -e
+          find bash monitoring -type f -name '*.sh' -print0 |
+            while IFS= read -r -d '' script; do
+              echo "Checking $script"
+              bash -n "$script"
+            done
+          echo "All Bash scripts passed syntax validation."
