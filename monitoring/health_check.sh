@@ -1,17 +1,20 @@
 #!/bin/bash
 
-LOG_FILE="$HOME/sre_lab/monitoring/logs/health.log"
+LOG_FILE="${LOG_FILE:-$HOME/sre_lab/monitoring/logs/health.log}"
+BACKEND_URL="${BACKEND_URL:-http://127.0.0.1:8080/health}"
+PROXY_URL="${PROXY_URL:-http://localhost/myapp/health}"
 
 check_url() {
     local name="$1"
     local url="$2"
     local status
+    local result
 
-    status=$(curl --fail  -s -o /dev/null \
+    status=$(curl --fail -s -o /dev/null \
         --connect-timeout 3 \
         --max-time 5 \
         -w "%{http_code}" "$url")
-    local result=$?
+    result=$?
 
     if [ "$result" -eq 0 ] && [ "$status" = "200" ]; then
         echo "PASS: $name - HTTP $status"
@@ -25,10 +28,10 @@ check_url() {
 
 mkdir -p "$(dirname "$LOG_FILE")"
 
-check_url "Backend" "http://127.0.0.1:8080/health"
+check_url "Backend" "$BACKEND_URL"
 backend_result=$?
 
-check_url "Nginx proxy" "http://localhost/myapp/health"
+check_url "Nginx proxy" "$PROXY_URL"
 proxy_result=$?
 
 if [ "$backend_result" -eq 0 ] && [ "$proxy_result" -eq 0 ]; then

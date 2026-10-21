@@ -1,0 +1,21 @@
+#!/bin/bash
+
+url="${*: -1}"
+
+case "$url" in
+    *backend*)
+        status="${MOCK_BACKEND_STATUS:-200}"
+        result="${MOCK_BACKEND_EXIT_CODE:-0}"
+        ;;
+    *proxy*)
+        status="${MOCK_PROXY_STATUS:-200}"
+        result="${MOCK_PROXY_EXIT_CODE:-0}"
+        ;;
+    *)
+        status="000"
+        result=7
+        ;;
+esac
+
+printf '%s' "$status"
+exit "$result"
