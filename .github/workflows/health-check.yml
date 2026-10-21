@@ -26,3 +26,6 @@ jobs:
               bash -n "$script"
             done
           echo "All Bash scripts passed syntax validation."
+
+- name: Run ShellCheck
+        run: shellcheck bash/*.sh monitoring/*.sh
