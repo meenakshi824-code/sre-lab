@@ -27,5 +27,5 @@ jobs:
             done
           echo "All Bash scripts passed syntax validation."
 
-- name: Run ShellCheck
+      - name: Run ShellCheck
         run: shellcheck bash/*.sh monitoring/*.sh
