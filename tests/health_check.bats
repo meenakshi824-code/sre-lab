@@ -43,3 +43,13 @@ setup() {
     [[ "$output" == *"Overall result: UNHEALTHY"* ]]
     grep -q "FAIL Nginx proxy HTTP 404" "$LOG_FILE"
 }
+@test "Backend connection failure makes overall check unhealthy" {
+    export MOCK_BACKEND_STATUS=000
+    export MOCK_BACKEND_EXIT_CODE=7
+
+    run bash monitoring/health_check.sh
+
+    [ "$status" -eq 1 ]
+    [[ "$output" == *"Overall result: UNHEALTHY"* ]]
+    grep -q "FAIL Backend HTTP 000" "$LOG_FILE"
+}
