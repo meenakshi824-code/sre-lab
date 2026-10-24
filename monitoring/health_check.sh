@@ -20,8 +20,8 @@ check_url() {
         echo "PASS: $name - HTTP $status"
         echo "$(date '+%F %T') PASS $name HTTP $status" >> "$LOG_FILE"
     else
-        echo "FAIL: $name - HTTP ${status:-000}"
-        echo "$(date '+%F %T') FAIL $name HTTP ${status:-000}" >> "$LOG_FILE"
+        echo "FAIL: $name - HTTP ${status:-000} (curl exit code: $result)"
+        echo "$(date '+%F %T') FAIL $name HTTP ${status:-000} curl_exit=$result" >> "$LOG_FILE"
         return 1
     fi
 }

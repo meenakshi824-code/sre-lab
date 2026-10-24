@@ -52,6 +52,7 @@ setup() {
     [ "$status" -eq 1 ]
     [[ "$output" == *"Overall result: UNHEALTHY"* ]]
     grep -q "FAIL Backend HTTP 000" "$LOG_FILE"
+    grep -q "FAIL Backend HTTP 000 curl_exit=7" "$LOG_FILE"
 }
 @test "Proxy connection failure makes overall check unhealthy" {
     export MOCK_PROXY_STATUS=000
