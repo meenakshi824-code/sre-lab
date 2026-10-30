@@ -1,5 +1,9 @@
 #!/bin/bash
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=monitoring/health_logic.sh
+source "$SCRIPT_DIR/health_logic.sh"
+
 LOG_FILE="${LOG_FILE:-$HOME/sre_lab/monitoring/logs/health.log}"
 BACKEND_URL="${BACKEND_URL:-http://127.0.0.1:8080/health}"
 PROXY_URL="${PROXY_URL:-http://localhost/myapp/health}"
@@ -9,6 +13,7 @@ check_url() {
     local url="$2"
     local status
     local result
+    local reason
 
     status=$(curl --fail -s -o /dev/null \
         --connect-timeout 3 \
@@ -20,8 +25,11 @@ check_url() {
         echo "PASS: $name - HTTP $status"
         echo "$(date '+%F %T') PASS $name HTTP $status" >> "$LOG_FILE"
     else
-        echo "FAIL: $name - HTTP ${status:-000} (curl exit code: $result)"
-        echo "$(date '+%F %T') FAIL $name HTTP ${status:-000} curl_exit=$result" >> "$LOG_FILE"
+        reason=$(describe_curl_error "$result")
+
+        echo "FAIL: $name - HTTP ${status:-000} (curl exit code: $result; $reason)"
+        echo "$(date '+%F %T') FAIL $name HTTP ${status:-000} curl_exit=$result reason=\"$reason\"" >> "$LOG_FILE"
+
         return 1
     fi
 }
@@ -40,3 +48,4 @@ else
     echo "Overall result: UNHEALTHY"
     exit 1
 fi
+
